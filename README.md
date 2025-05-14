@@ -5,6 +5,9 @@ and [Spring AI](https://spring.io/projects/spring-ai) to query and enhance LLMs 
 It is intentionally bare bones to provide just an example of the interaction between 
 Temporal, Spring and Spring AI. 
 
+The following is an example chat showing a question asked before adding and after adding content to the demo
+that contains the latest Disney theme park (as of 2025):
+
 ![Full Example](./assets/full-example.gif)
 
 While this repo is a demo that will only show Spring AI there is another repo,
