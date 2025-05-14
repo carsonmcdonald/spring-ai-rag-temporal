@@ -1,8 +1,15 @@
 # Demo of Spring AI and Temporal using RAG
 
 This demo is meant to be a starting point for someone interested in using [Temporal](https://temporal.io/)
-and [Spring AI](https://spring.io/projects/spring-ai) to query LLMs using Retrieval Augmented Generation (RAG). It is intentionally bare bones
-to provide just an example of the interaction between Temporal, Spring and Spring AI.
+and [Spring AI](https://spring.io/projects/spring-ai) to query and enhance LLMs using Retrieval Augmented Generation (RAG). 
+It is intentionally bare bones to provide just an example of the interaction between 
+Temporal, Spring and Spring AI. 
+
+![Full Example](./assets/full-example.gif)
+
+While this repo is a demo that will only show Spring AI there is another repo,
+[LLM Playground](https://github.com/carsonmcdonald/llm-playground), that will have examples of different and more
+fully featured pipelines.
 
 The following diagram shows the interaction between the various parts of the system:
 
@@ -56,6 +63,18 @@ Frontend Stack
 The following assumes that everything will be running locally on a single machine but that is not a requirement. The
 appropriate properties needed to change where things run are called out in each section.
 
+First clone this repository:
+
+```shell
+git clone https://github.com/carsonmcdonald/spring-ai-rag-temporal
+cd spring-ai-rag-temporal
+```
+
+You will need to have Java, Maven and NodeJS installed ahead of time. The demo was tested with Java 
+corretto-21.0.5.11.1, Maven 3.6.3 and NodeJS 19.6.0.
+
+For each of the following you will need at least one terminal window open:
+
 <details>
 
 <summary>Run Ollama</summary>
@@ -68,12 +87,14 @@ how to run Ollama locally.
 
 To fetch the models needed and run Ollama, use the following commands:
 ```shell
+ollama serve
 ollama pull nomic-embed-text
 ollama pull llama3.1:8b
-ollama serve
 ```
 
-Note that you will need about 4G of disk space in total for the above models.
+Note that you will need about 5G of disk space in total for the above models and if you are running on old hardware
+that doesn't have a usable GPU or enough GPU memory you may have to adjust the timeout values in the code to keep
+the requests from failing. This demo has been tested with both an nvidia RTX 2060 and a Macbook M4.
 
 </details>
 
@@ -111,6 +132,7 @@ docker run -d -p 5432:5432 \
     -e POSTGRES_PASSWORD=password \
     pgvector/pgvector:pg17
 ```
+
 For even more information see [PGVector on Docker](https://github.com/pgvector/pgvector?tab=readme-ov-file#docker)
 
 </details>
@@ -151,6 +173,9 @@ cd pipeline
 mvn spring-boot:run
 ```
 </details>
+
+With all of the above running you should be able to access the web application at http://localhost:5173/ and ask a
+question.
 
 ## Details
 
@@ -220,6 +245,8 @@ queries. The general queries that go to the server first send a PATCH request to
 conversationId and the user's query and get back a workflowId. That workflowId is then used in a loop that polls the 
 /chat/{workflowId} endpoint with GET requests until a value is returned or a timeout is reached.
 
+![Chat Screen](./assets/full-chat-screen.png)
+
 To augment the system with new content there is an admin modal that launches when the user clicks the "Add Content" 
 button at the top of the screen. That modal can be found in the component AdminModal in admin-modal.tsx file. This
 modal component takes in a URL for the content to fetch and use in the RAG pipeline. That content URL is sent to the
@@ -227,9 +254,18 @@ modal component takes in a URL for the content to fetch and use in the RAG pipel
 the /resource/{workflowId}/status endpoint with GET requests and show the status returned until the status is either
 DONE or FAILED.
 
+![Admin Modal](./assets/example-admin-modal.png)
+
 ## Other Notes
 
 * This is a good [Spring AI intro video](https://www.youtube.com/watch?v=6Pgmr7xMjiY) although a few things have changed since it was created so refer to the documentation.
 * Temporal has a [Spring Boot Tutorial](https://learn.temporal.io/tutorials/java/build-an-email-drip-campaign/) that is a good reference point for more detail on the Spring integration.
+
+This is a list of things that will go into the [LLM Playground](https://github.com/carsonmcdonald/llm-playground) repo 
+where the focus is not just Spring AI:
+
+* It would be nice to support streaming results
+* It would be nice to support human in the loop resolution of failed content fetching or processing
+* Change parts of the system to use more traditional processing such as [LangChain](https://www.langchain.com/), etc
 
 
