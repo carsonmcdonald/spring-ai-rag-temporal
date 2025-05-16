@@ -17,6 +17,10 @@ public class ResourceFetchActivityImpl implements ResourceFetchActivity {
     @Override
     public ResourceFetchActivityResult startFetch(String resourceUrl) {
         try {
+            // Please note that doing the following assumes everything is running on the same machine.
+            // If you wanted to do this where everything isn't going to run on the same machine you 
+            // would need to have a shared filesystem between all workers or use an external object 
+            // store. 
             File tempFile = File.createTempFile(UUID.randomUUID().toString(), ".tmp");
             InputStream inputStream = URI.create(resourceUrl).toURL().openStream();
             Files.copy(inputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
